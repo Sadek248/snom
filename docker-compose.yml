@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27018/SNOM  # Connects to MongoDB on port 27018
+    depends_on:
+      - mongo
+
+  frontend:
+    # Assuming you don't have a Dockerfile for frontend, we'll use a Node.js image and run from the frontend folder
+    image: node:14
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: ["npm", "start"]  # Adjust if your start command is different
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo
+    ports:
+      - "27018:27017"  # Maps MongoDB's internal port 27017 to external port 27018
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
